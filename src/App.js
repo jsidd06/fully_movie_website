@@ -4,10 +4,13 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import MovieList from './Components/Movie/MovieList/MovieList';
 import MovieListHeading from './Components/Movie/MovieListHeading/MovieListHeading';
 import SearchBox from './Components/SearchBox/SearchBox';
+import AddFavorite from './Components/AddFavorite/AddFavorite';
+import RemoveFavorite from './Components/RemoveFavorite/RemoveFavorite';
 
 function App() {
   const [movies, setMovies] = useState([]);
   const [searchMovieValue, setSearchMovieValue] = useState("");
+  const [favorite,setFavorite] = useState([]);
 
 
   const getMoviesResult = async (searchMovieValue) => {
@@ -24,8 +27,16 @@ function App() {
   useEffect(() => {
     getMoviesResult(searchMovieValue);
   } , [searchMovieValue]);
+// we are editing the state of the favorite array here and we are adding the movie to the array so that we can display it in the favorite list and also save the data using spread operator in local storage
+const AddFavoriteMovie = (movie) => {
+  const newFavoriteList = [...favorite, movie];
+  setFavorite(newFavoriteList);
+}
 
-
+const RemoveFavoriteMovie = (movie) => {
+  const newFavoriteList = favorite.filter(item => item.imdbID !== movie.imdbID);
+  setFavorite(newFavoriteList);
+}
 
   return (
     <div className="container-fluid movie-app">
@@ -34,7 +45,19 @@ function App() {
         <SearchBox searchValue={searchMovieValue} setSearchMovieValue={setSearchMovieValue} />
       </div>
       <div className="row">
-        <MovieList movies={movies} />
+        <MovieList movies={movies} 
+        handleFavoriteClick={AddFavoriteMovie}
+        favoriteComponent={AddFavorite}
+         />
+      </div>
+      <div className="row d-flex align-items-center mt-4 mb-4">
+        <MovieListHeading heading="Favorites" />
+      </div>
+      <div className="row">
+        <MovieList movies={favorite} 
+        handleFavoriteClick={RemoveFavoriteMovie}
+        favoriteComponent={RemoveFavorite}
+         />
       </div>
     </div>
   );
